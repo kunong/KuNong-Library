@@ -1,10 +1,14 @@
 package kunong.android.library.helper;
 
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.ListView;
+
+import java.util.ArrayList;
 
 /**
  * Created by Macmini on 10/3/14 AD.
@@ -62,6 +66,43 @@ public class ViewHelper {
 
             return listView.getChildAt(childIndex);
         }
+    }
+
+    public static <T extends View> ArrayList<T> findViews(View root, Class<T> cls) {
+        ArrayList<T> viewList = new ArrayList<>();
+
+        if (root != null && ViewGroup.class.isInstance(root)) {
+
+            ViewGroup viewGroup = (ViewGroup) root;
+            int childCount = viewGroup.getChildCount();
+
+            for (int i = 0; i < childCount; i++) {
+                View view = viewGroup.getChildAt(i);
+
+                if (view == null)
+                    continue;
+
+                if (cls.isInstance(view)) {
+                    viewList.add(cls.cast(view));
+                } else {
+                    viewList.addAll(findViews(view, cls));
+                }
+            }
+        }
+
+        return viewList;
+    }
+
+    public static Bitmap getBitmapFromView(View view) {
+        view.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED), View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+
+        Bitmap bitmap = Bitmap.createBitmap(view.getMeasuredWidth(), view.getMeasuredHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+
+        view.layout(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
+        view.draw(canvas);
+
+        return bitmap;
     }
 
     public static interface OnLayoutUpdateListener {
