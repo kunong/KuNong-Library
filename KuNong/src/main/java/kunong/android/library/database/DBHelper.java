@@ -26,7 +26,7 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     /**
-     *
+     * Need to call init() before call getInstance() method.
      * @param context Application context.
      * @param databasePath Path of your SQLite database file in the assets folder. Example, demo.sqlite.
      * @param databaseVersion Set your current SQLite database version.
