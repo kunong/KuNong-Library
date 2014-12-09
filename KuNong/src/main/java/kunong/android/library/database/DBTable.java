@@ -21,8 +21,7 @@ import kunong.android.library.database.Annotation.Table;
 public abstract class DBTable implements Serializable, Cloneable {
 
     private static final long serialVersionUID = 3816235107361342733L;
-
-    private static SparseArray<DBTableProperty> mTableProperties = new SparseArray<DBTableProperty>();
+    private static final SparseArray<DBTableProperty> mTableProperties = new SparseArray<>();
     private transient DBTableProperty mProperty;
 
     public static <T extends DBTable> Object[] getPrimaryKeysValue(Class<T> cls, Cursor cursor) {
@@ -103,7 +102,7 @@ public abstract class DBTable implements Serializable, Cloneable {
     }
 
     @Deprecated
-    public static final <T extends DBTable> ArrayList<T> findWithCondition(Class<T> cls, String condition) {
+    public static <T extends DBTable> ArrayList<T> findWithCondition(Class<T> cls, String condition) {
         return newQuery().withCondition(condition).query(cls);
     }
 
@@ -111,7 +110,7 @@ public abstract class DBTable implements Serializable, Cloneable {
         return new DBQuery();
     }
 
-    private static final <T extends DBTable> Cursor getCursorByQuery(Class<T> cls, DBQuery dbQuery) {
+    private static <T extends DBTable> Cursor getCursorByQuery(Class<T> cls, DBQuery dbQuery) {
         SQLiteDatabase db = DBHelper.getInstance().getDatabase();
         DBTable table = createObjectFromTable(cls);
         String orderBy = (dbQuery.orderBy == null) ? table.getDefaultOrderBy() : dbQuery.orderBy;
@@ -125,7 +124,7 @@ public abstract class DBTable implements Serializable, Cloneable {
         return cursor;
     }
 
-    private static final <T extends DBTable> ArrayList<T> findByQuery(Class<T> cls, DBQuery dbQuery) {
+    private static <T extends DBTable> ArrayList<T> findByQuery(Class<T> cls, DBQuery dbQuery) {
         Cursor cursor = getCursorByQuery(cls, dbQuery);
         ArrayList<T> objectList = new ArrayList<T>();
 
@@ -140,11 +139,11 @@ public abstract class DBTable implements Serializable, Cloneable {
         return objectList;
     }
 
-    public static final <T extends DBTable> T toObject(Class<T> cls, Cursor cursor) {
+    public static <T extends DBTable> T toObject(Class<T> cls, Cursor cursor) {
         return toObject(cls, cursor, null);
     }
 
-    public static final <T extends DBTable> T toObject(Class<T> cls, Cursor cursor, String aliasTableName) {
+    public static <T extends DBTable> T toObject(Class<T> cls, Cursor cursor, String aliasTableName) {
         String prefix = (aliasTableName != null && aliasTableName.length() > 0) ? (aliasTableName + "_") : "";
         DataBundle data = getDataBundle(cursor);
         T object = createObjectFromTable(cls);
@@ -177,7 +176,7 @@ public abstract class DBTable implements Serializable, Cloneable {
         return data;
     }
 
-    public static final void delete(Class<? extends DBTable> cls, Object... values) {
+    public static void delete(Class<? extends DBTable> cls, Object... values) {
         SQLiteDatabase db = DBHelper.getInstance().getDatabase();
         DBTable table = createObjectFromTable(cls);
 
@@ -210,19 +209,16 @@ public abstract class DBTable implements Serializable, Cloneable {
         DBCacheManager.getInstance().removeCacheForTable(cls);
     }
 
-    public static final <T extends DBTable> T createObjectFromTable(Class<T> cls) {
-        T table = null;
+    public static <T extends DBTable> T createObjectFromTable(Class<T> cls) {
         try {
-            table = cls.getConstructor().newInstance();
+            return cls.getConstructor().newInstance();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-
-        return table;
     }
 
     public static int getTotalCount(Class<? extends DBTable> cls) {
-        SQLiteDatabase db = DBHelper.getInstance().getDatabase();
+        final SQLiteDatabase db = DBHelper.getInstance().getDatabase();
         DBTable table = createObjectFromTable(cls);
         Cursor cursor;
 
@@ -284,12 +280,14 @@ public abstract class DBTable implements Serializable, Cloneable {
         return tableAnnotation.value().equals(defaultValue) ? cls.getSimpleName().toLowerCase(Locale.ENGLISH) : tableAnnotation.value();
     }
 
-    private final void parseFields() {
+    private void parseFields() {
         if (mProperty != null)
             return;
 
+        final int tableKey = getClass().hashCode();
+
         synchronized (mTableProperties) {
-            mProperty = mTableProperties.get(getClass().hashCode());
+            mProperty = mTableProperties.get(tableKey);
 
             if (mProperty != null)
                 return;
@@ -378,6 +376,8 @@ public abstract class DBTable implements Serializable, Cloneable {
             mProperty.setPrimaryKeysName(primaryKeysName);
             mProperty.setFieldsName(fieldsName);
         }
+
+        mTableProperties.put(tableKey, mProperty);
     }
 
     public final String getTableName() {
@@ -402,7 +402,7 @@ public abstract class DBTable implements Serializable, Cloneable {
         return adjustFields(mProperty.getFieldsName());
     }
 
-    private final String[] adjustFields(String[] fields) {
+    private String[] adjustFields(String[] fields) {
         ArrayList<String> fieldList = new ArrayList<String>();
 
         for (String field : fields) {
@@ -450,9 +450,7 @@ public abstract class DBTable implements Serializable, Cloneable {
                     // Convert boolean type to 0 or 1.
                     if (value instanceof Boolean)
                         value = (Boolean) value ? 1 : 0;
-                } catch (IllegalArgumentException e) {
-                    throw new RuntimeException(e);
-                } catch (IllegalAccessException e) {
+                } catch (IllegalArgumentException | IllegalAccessException e) {
                     throw new RuntimeException(e);
                 }
                 break;
@@ -488,9 +486,7 @@ public abstract class DBTable implements Serializable, Cloneable {
     private Object getFieldValue(DBField dbField) {
         try {
             return dbField.field.get(this);
-        } catch (IllegalArgumentException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalAccessException e) {
+        } catch (IllegalArgumentException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
     }
@@ -567,16 +563,14 @@ public abstract class DBTable implements Serializable, Cloneable {
                         value = data.getShort(fieldName);
                     else if (fieldType == Integer.class || fieldType == Integer.TYPE)
                         value = data.getInt(fieldName);
-                    else if (fieldType == Long.class || fieldType == Long.TYPE) {
+                    else if (fieldType == Long.class || fieldType == Long.TYPE)
                         value = data.getLong(fieldName);
-                    } else if (fieldType == Float.class || fieldType == Float.TYPE)
+                    else if (fieldType == Float.class || fieldType == Float.TYPE)
                         value = data.getFloat(fieldName);
                     else if (fieldType == Double.class || fieldType == Double.TYPE)
                         value = data.getDouble(fieldName);
                     else
                         value = data.get(fieldName);
-
-                    // Util.log(getTableName(), fieldName);
 
                     try {
 
@@ -599,9 +593,7 @@ public abstract class DBTable implements Serializable, Cloneable {
                             field.set(this, value);
                         }
 
-                    } catch (IllegalArgumentException e) {
-                        throw new RuntimeException(e);
-                    } catch (IllegalAccessException e) {
+                    } catch (IllegalArgumentException | IllegalAccessException e) {
                         throw new RuntimeException(e);
                     }
 
@@ -618,9 +610,7 @@ public abstract class DBTable implements Serializable, Cloneable {
 
                     try {
                         field.set(this, table);
-                    } catch (IllegalArgumentException e) {
-                        throw new RuntimeException(e);
-                    } catch (IllegalAccessException e) {
+                    } catch (IllegalArgumentException | IllegalAccessException e) {
                         throw new RuntimeException(e);
                     }
                     break;
@@ -629,9 +619,7 @@ public abstract class DBTable implements Serializable, Cloneable {
                     if (field.getType() == Date.class) {
                         try {
                             field.set(this, new Date(data.getLong(prefix + fieldName)));
-                        } catch (IllegalArgumentException e) {
-                            throw new RuntimeException(e);
-                        } catch (IllegalAccessException e) {
+                        } catch (IllegalArgumentException | IllegalAccessException e) {
                             throw new RuntimeException(e);
                         }
                     }
