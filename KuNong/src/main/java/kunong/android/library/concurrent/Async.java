@@ -1,5 +1,8 @@
 package kunong.android.library.concurrent;
 
+import android.os.Handler;
+import android.os.Looper;
+
 import java.util.LinkedList;
 
 /**
@@ -12,7 +15,11 @@ public class Async {
     }
 
     public static Task main(Runnable runnable) {
-        return new Task().main(runnable);
+        return main(runnable, 0);
+    }
+
+    public static Task main(Runnable runnable, long delay) {
+        return new Task().main(runnable, delay);
     }
 
     public enum QueueType {
@@ -22,6 +29,7 @@ public class Async {
     public static class Task {
         LinkedList<TaskQueue> queues = new LinkedList<>();
 
+        private Handler mHandler = new Handler(Looper.getMainLooper());
         private boolean hasRunningTask;
 
         public Task background(Runnable runnable) {
@@ -33,7 +41,11 @@ public class Async {
         }
 
         public Task main(Runnable runnable) {
-            this.queues.add(new TaskQueue(QueueType.MAIN, runnable));
+            return main(runnable, 0);
+        }
+
+        public Task main(Runnable runnable, long delay) {
+            this.queues.add(new TaskQueue(QueueType.MAIN, runnable, delay));
 
             onTaskComplete();
 
@@ -54,7 +66,7 @@ public class Async {
             if (taskQueue.type == QueueType.BACKGROUND) {
                 runBackground(taskQueue.runnable);
             } else {
-                runMain(taskQueue.runnable);
+                runMain(taskQueue.runnable, taskQueue.delay);
             }
         }
 
@@ -80,22 +92,30 @@ public class Async {
             threadQueue.start();
         }
 
-        private void runMain(Runnable runnable) {
-            runnable.run();
+        private void runMain(Runnable runnable, long delay) {
+            mHandler.postDelayed(() -> {
+                runnable.run();
 
-            hasRunningTask = false;
+                hasRunningTask = false;
 
-            onTaskComplete();
+                onTaskComplete();
+            }, delay);
         }
     }
 
     public static class TaskQueue {
         QueueType type;
         Runnable runnable;
+        long delay;
 
         public TaskQueue(QueueType type, Runnable runnable) {
+            this(type, runnable, 0);
+        }
+
+        public TaskQueue(QueueType type, Runnable runnable, long delay) {
             this.type = type;
             this.runnable = runnable;
+            this.delay = delay;
         }
     }
 }
