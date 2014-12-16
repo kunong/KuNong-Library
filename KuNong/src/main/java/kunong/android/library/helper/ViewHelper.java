@@ -10,6 +10,8 @@ import android.widget.ListView;
 
 import java.util.ArrayList;
 
+import kunong.android.library.concurrent.EventLocker;
+
 /**
  * Created by Macmini on 10/3/14 AD.
  */
@@ -27,6 +29,20 @@ public class ViewHelper {
                 return true;
             }
         });
+    }
+
+    public static void addOnPreDrawListener(Runnable listener, View... views) {
+        EventLocker eventLocker = new EventLocker();
+
+        for (View view : views) {
+            final String key = String.valueOf(view.hashCode());
+
+            eventLocker.lock(key);
+
+            addOnPreDrawListener(view, v -> eventLocker.unlock(key));
+        }
+
+        eventLocker.run(listener);
     }
 
     public static void addOnLayoutUpdateListener(View view, OnLayoutUpdateListener listener) {
