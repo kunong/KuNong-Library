@@ -51,9 +51,23 @@ public class ViewHelper {
             public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
                 view.removeOnLayoutChangeListener(this);
 
-                listener.onLayoutUpdate(v);
+                addOnPreDrawListener(view, v1 -> listener.onLayoutUpdate(v));
             }
         });
+    }
+
+    public static void addOnLayoutUpdateListener(Runnable listener, View... views) {
+        EventLocker eventLocker = new EventLocker();
+
+        for (View view : views) {
+            final String key = String.valueOf(view.hashCode());
+
+            eventLocker.lock(key);
+
+            addOnLayoutUpdateListener(view, v -> eventLocker.unlock(key));
+        }
+
+        eventLocker.run(listener);
     }
 
     public static void setTopMargin(View view, int topMargin) {
