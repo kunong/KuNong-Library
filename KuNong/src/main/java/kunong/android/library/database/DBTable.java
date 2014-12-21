@@ -475,7 +475,7 @@ public abstract class DBTable implements Serializable, Cloneable {
             case DATE_TIMESTAMP:
                 if (dbField.field.getType() == Date.class) {
                     Date date = (Date) getFieldValue(dbField);
-                    value = date.getTime();
+                    value = date != null ? date.getTime() : null;
                 }
                 break;
         }
@@ -618,7 +618,11 @@ public abstract class DBTable implements Serializable, Cloneable {
                 case DATE_TIMESTAMP:
                     if (field.getType() == Date.class) {
                         try {
-                            field.set(this, new Date(data.getLong(prefix + fieldName)));
+                            Long time = data.getLong(prefix + fieldName);
+
+                            if (time != null) {
+                                field.set(this, new Date(time));
+                            }
                         } catch (IllegalArgumentException | IllegalAccessException e) {
                             throw new RuntimeException(e);
                         }
