@@ -1,5 +1,5 @@
 apply plugin: 'com.android.library'
-apply plugin: 'retrolambda'
+apply plugin: 'me.tatarka.retrolambda'
 
 android {
     compileSdkVersion 19
@@ -7,7 +7,7 @@ android {
 
     defaultConfig {
         minSdkVersion 14
-        targetSdkVersion 19
+        targetSdkVersion 21
         versionName '1.0.0'
         versionCode 1
     }
@@ -29,7 +29,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'me.tatarka:gradle-retrolambda:2.4.0'
+        classpath 'me.tatarka:gradle-retrolambda:2.5.0'
     }
 }
 
