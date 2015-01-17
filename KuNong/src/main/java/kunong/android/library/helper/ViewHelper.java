@@ -9,6 +9,7 @@ import android.view.ViewTreeObserver;
 import android.widget.ListView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import kunong.android.library.concurrent.EventLocker;
 
@@ -98,8 +99,16 @@ public class ViewHelper {
         }
     }
 
-    public static <T extends View> ArrayList<T> findViews(View root, Class<T> cls) {
-        ArrayList<T> viewList = new ArrayList<>();
+    public static List<View> getChildren(ViewGroup parent) {
+        return findViews(parent, View.class, false);
+    }
+
+    public static <T extends View> List<T> findViews(View root, Class<T> cls) {
+        return findViews(root, cls, true);
+    }
+
+    public static <T extends View> List<T> findViews(View root, Class<T> cls, boolean recursive) {
+        List<T> viewList = new ArrayList<>();
 
         if (root != null && ViewGroup.class.isInstance(root)) {
 
@@ -114,8 +123,8 @@ public class ViewHelper {
 
                 if (cls.isInstance(view)) {
                     viewList.add(cls.cast(view));
-                } else {
-                    viewList.addAll(findViews(view, cls));
+                } else if (recursive) {
+                    viewList.addAll(findViews(view, cls, true));
                 }
             }
         }
