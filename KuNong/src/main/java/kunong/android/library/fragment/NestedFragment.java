@@ -1,12 +1,16 @@
 package kunong.android.library.fragment;
 
+import android.content.Intent;
 import android.content.res.Resources;
 import android.support.v4.app.Fragment;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
+import com.annimon.stream.Stream;
+
 import java.lang.reflect.Field;
+import java.util.List;
 
 /**
  * Created by kunong on 12/13/14 AD.
@@ -14,25 +18,6 @@ import java.lang.reflect.Field;
 public class NestedFragment extends Fragment {
 
     private static final int DEFAULT_CHILD_ANIMATION_DURATION = 250;
-
-    @Override
-    public Animation onCreateAnimation(int transit, boolean enter, int nextAnim) {
-        // Apply the workaround only if this is a child fragment, and the parent is being removed.
-        if (!enter) {
-            final Fragment parent = getRemovingParent(this);
-
-            if (parent != null && parent.isRemoving() && isVisible()) {
-                // This is a workaround for the bug where child fragments disappear when the parent is removed (as all children are first removed from the parent)
-                // See https://code.google.com/p/android/issues/detail?id=55228
-                Animation doNothingAnim = new AlphaAnimation(1, 1);
-                doNothingAnim.setDuration(getNextAnimationDuration(parent, DEFAULT_CHILD_ANIMATION_DURATION));
-
-                return doNothingAnim;
-            }
-        }
-
-        return super.onCreateAnimation(transit, enter, nextAnim);
-    }
 
     private static long getNextAnimationDuration(Fragment fragment, long defValue) {
         try {
@@ -59,4 +44,32 @@ public class NestedFragment extends Fragment {
         return fragment;
     }
 
+    @Override
+    public Animation onCreateAnimation(int transit, boolean enter, int nextAnim) {
+        // Apply the workaround only if this is a child fragment, and the parent is being removed.
+        if (!enter) {
+            final Fragment parent = getRemovingParent(this);
+
+            if (parent != null && parent.isRemoving() && isVisible()) {
+                // This is a workaround for the bug where child fragments disappear when the parent is removed (as all children are first removed from the parent)
+                // See https://code.google.com/p/android/issues/detail?id=55228
+                Animation doNothingAnim = new AlphaAnimation(1, 1);
+                doNothingAnim.setDuration(getNextAnimationDuration(parent, DEFAULT_CHILD_ANIMATION_DURATION));
+
+                return doNothingAnim;
+            }
+        }
+
+        return super.onCreateAnimation(transit, enter, nextAnim);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        List<Fragment> fragments = getChildFragmentManager().getFragments();
+        if (fragments != null) {
+            Stream.of(fragments).forEach(fragment -> fragment.onActivityResult(requestCode, resultCode, data));
+        }
+    }
 }
