@@ -68,8 +68,13 @@ public class NestedFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
 
         List<Fragment> fragments = getChildFragmentManager().getFragments();
+
         if (fragments != null) {
-            Stream.of(fragments).forEach(fragment -> fragment.onActivityResult(requestCode, resultCode, data));
+            Stream.of(fragments).forEach(fragment -> {
+                if (fragment != null) {
+                    fragment.onActivityResult(requestCode, resultCode, data);
+                }
+            });
         }
     }
 }
