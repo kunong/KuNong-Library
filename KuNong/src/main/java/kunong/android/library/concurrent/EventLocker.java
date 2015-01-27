@@ -2,6 +2,8 @@ package kunong.android.library.concurrent;
 
 import android.util.SparseArray;
 
+import com.annimon.stream.Stream;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,6 +18,13 @@ public final class EventLocker {
     private SparseArray<Runnable> mRunnables = new SparseArray<>();
     private List<Runnable> mRunnableQueue = new ArrayList<>();
     private boolean mIsChecking = false;
+
+    public EventLocker() {
+    }
+
+    public EventLocker(String... keys) {
+        Stream.of(keys).forEach(this::lock);
+    }
 
     public synchronized void lock(String key) {
         mKeys.put(key, true);
