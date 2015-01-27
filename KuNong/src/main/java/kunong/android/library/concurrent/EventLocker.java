@@ -57,6 +57,10 @@ public final class EventLocker {
         }
     }
 
+    public boolean containKey(String key) {
+        return mKeys.containsKey(key);
+    }
+
     public void remove(String runKey) {
         remove(runKey.hashCode());
     }
@@ -110,7 +114,7 @@ public final class EventLocker {
         mRunnables.clear();
     }
 
-    private boolean isKeyEmpty() {
+    public boolean isKeyEmpty() {
         return mKeys.size() == 0;
     }
 
