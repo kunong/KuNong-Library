@@ -20,6 +20,8 @@ import kunong.android.library.concurrent.Async;
 
 public abstract class FullscreenDialogFragment extends DialogFragment implements DialogInterface.OnKeyListener {
 
+    private boolean mIsClosing;
+
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         View view = new FrameLayout(getActivity());
@@ -52,10 +54,15 @@ public abstract class FullscreenDialogFragment extends DialogFragment implements
     }
 
     public void close() {
+        if (mIsClosing)
+            return;
+
         View view = getView();
         int animationId = getExitAnimation();
 
         if (animationId != 0 && view != null) {
+
+            mIsClosing = true;
 
             Animation animation = AnimationUtils.loadAnimation(view.getContext(), animationId);
             animation.setAnimationListener(new Animation.AnimationListener() {
