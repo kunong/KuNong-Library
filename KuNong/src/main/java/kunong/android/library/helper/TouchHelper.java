@@ -11,9 +11,7 @@ import android.view.ViewGroup;
 public class TouchHelper {
 
     public static void disableParentTouchEventWhenTouch(View sourceView, ViewGroup targetView) {
-        View view = sourceView;
-
-        view.setOnTouchListener((v, event) -> {
+        sourceView.setOnTouchListener((v, event) -> {
             int action = event.getAction() & MotionEventCompat.ACTION_MASK;
 
             switch (action) {
