@@ -99,6 +99,19 @@ public class ViewHelper {
         }
     }
 
+    public static Rect getRectInView(ViewGroup parent, View view) {
+        int[] viewLocation = new int[2];
+        view.getLocationInWindow(viewLocation);
+
+        int[] rootLocation = new int[2];
+        parent.getLocationInWindow(rootLocation);
+
+        int relativeLeft = viewLocation[0] - rootLocation[0];
+        int relativeTop = viewLocation[1] - rootLocation[1];
+
+        return new Rect(relativeLeft, relativeTop, relativeLeft + view.getWidth(), relativeTop + view.getHeight());
+    }
+
     public static List<View> getChildren(ViewGroup parent) {
         return findViews(parent, View.class, false);
     }
