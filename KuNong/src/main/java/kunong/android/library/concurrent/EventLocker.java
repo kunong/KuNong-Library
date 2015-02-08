@@ -43,7 +43,7 @@ public final class EventLocker {
     }
 
     public void run(String runKey, Runnable runnable) {
-        run(runKey.hashCode(), runnable);
+        run(getRunCode(runKey), runnable);
     }
 
     private synchronized void run(int runCode, Runnable runnable) {
@@ -57,12 +57,20 @@ public final class EventLocker {
         }
     }
 
+    private int getRunCode(String runKey) {
+        return runKey.hashCode();
+    }
+
+    public boolean containRun(String runKey) {
+        return getRunnable(getRunCode(runKey)) != null;
+    }
+
     public boolean containKey(String key) {
         return mKeys.containsKey(key);
     }
 
     public void remove(String runKey) {
-        remove(runKey.hashCode());
+        remove(getRunCode(runKey));
     }
 
     private synchronized void remove(int runCode) {
