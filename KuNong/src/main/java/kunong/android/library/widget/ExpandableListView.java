@@ -11,6 +11,7 @@ import android.widget.ListView;
 public class ExpandableListView extends ListView {
 
     private boolean mExpanded = true;
+    private boolean mLimitHeight = false;
 
     public ExpandableListView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -19,7 +20,15 @@ public class ExpandableListView extends ListView {
     @Override
     public void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         // HACK! TAKE THAT ANDROID!
-        if (isExpanded()) {
+        if (mExpanded) {
+            int maxHeight = Integer.MAX_VALUE;
+
+            if (mLimitHeight) {
+                super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
+                maxHeight = getMeasuredHeight();
+            }
+
             // Calculate entire height by providing a very large height hint.
             // But do not use the highest 2 bits of this integer; those are
             // reserved for the MeasureSpec mode.
@@ -27,7 +36,7 @@ public class ExpandableListView extends ListView {
             super.onMeasure(widthMeasureSpec, expandSpec);
 
             ViewGroup.LayoutParams params = getLayoutParams();
-            params.height = getMeasuredHeight();
+            params.height = Math.min(maxHeight, getMeasuredHeight());
         } else {
             super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         }
@@ -39,5 +48,13 @@ public class ExpandableListView extends ListView {
 
     public void setExpanded(boolean expanded) {
         this.mExpanded = expanded;
+    }
+
+    public boolean isLimitHeight() {
+        return mLimitHeight;
+    }
+
+    public void setLimitHeight(boolean limitHeight) {
+        mLimitHeight = limitHeight;
     }
 }
