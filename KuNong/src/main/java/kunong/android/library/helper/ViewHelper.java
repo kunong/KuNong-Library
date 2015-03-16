@@ -145,13 +145,23 @@ public class ViewHelper {
         return viewList;
     }
 
-    public static Bitmap getBitmapFromView(View view) {
-        view.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED), View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
 
-        Bitmap bitmap = Bitmap.createBitmap(view.getMeasuredWidth(), view.getMeasuredHeight(), Bitmap.Config.ARGB_8888);
+    public static Bitmap getBitmapFromView(View view) {
+        return getBitmapFromView(view, true);
+    }
+
+    public static Bitmap getBitmapFromView(View view, boolean layoutView) {
+        if (layoutView) {
+            view.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED), View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+        }
+
+        Bitmap bitmap = Bitmap.createBitmap(layoutView ? view.getMeasuredWidth() : view.getWidth(), layoutView ? view.getMeasuredHeight() : view.getHeight(), Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
 
-        view.layout(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
+        if (layoutView) {
+            view.layout(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
+        }
+
         view.draw(canvas);
 
         return bitmap;
