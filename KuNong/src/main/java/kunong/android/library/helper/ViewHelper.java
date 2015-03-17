@@ -99,6 +99,26 @@ public class ViewHelper {
         }
     }
 
+    /**
+     *
+     * @param position the position in adapter.
+     * @param listView
+     */
+    public static void refreshViewByPosition(int position, ListView listView) {
+        final int firstListItemPosition = listView.getFirstVisiblePosition();
+        final int lastListItemPosition = firstListItemPosition + listView.getChildCount() - 1;
+
+        position += listView.getHeaderViewsCount();
+
+        if (position >= firstListItemPosition && position <= lastListItemPosition) {
+            final int childIndex = position - firstListItemPosition;
+
+            View view = listView.getChildAt(childIndex);
+
+            listView.getAdapter().getView(position, view, listView);
+        }
+    }
+
     public static Rect getRectInView(ViewGroup parent, View view) {
         int[] viewLocation = new int[2];
         view.getLocationInWindow(viewLocation);
