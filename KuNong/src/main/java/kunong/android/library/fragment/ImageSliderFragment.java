@@ -1,6 +1,7 @@
 package kunong.android.library.fragment;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.RectF;
@@ -372,6 +373,28 @@ public class ImageSliderFragment extends Fragment {
         return mImageSliderable.getImageSliderController();
     }
 
+    public interface ImageSliderable {
+
+        public void onImageSliderInitialized(ImageSliderFragment imageSliderFragment);
+
+        public void onImageSliderDismiss(ImageSliderFragment imageSliderFragment);
+
+        public ImageSliderController getImageSliderController();
+    }
+
+    public static abstract class ImageSliderController {
+        public abstract int getCount();
+
+        public abstract Object getSourceImage(int position);
+
+        public abstract Point getImageSize(int position);
+
+        public abstract View getViewDisplaying(int position);
+
+        public void onPageSelected(int position) {
+        }
+    }
+
     protected class ImageAdapter extends PagerAdapter {
 
         @Override
@@ -395,7 +418,7 @@ public class ImageSliderFragment extends Fragment {
         @Override
         public void bindingView(int position, View view, ViewGroup container) {
             final ViewHolder holder = (ViewHolder) view.getTag();
-            String imageURL = getController().getImageUrl(position);
+            Object sourceImage = getController().getSourceImage(position);
 
             if (mAnimatingPosition == position) {
                 holder.imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
@@ -408,11 +431,25 @@ public class ImageSliderFragment extends Fragment {
                 }
             }
 
-            Ion.with(holder.imageView).load(imageURL).setCallback((e, imageView) -> {
-                if (mAnimatingPosition != position) {
+            if (sourceImage instanceof CharSequence) {
+
+                Ion.with(holder.imageView).load(sourceImage.toString()).setCallback((e, imageView) -> {
+                    if (mAnimatingPosition != position) {
+                        holder.photoViewAttacher.update();
+                    }
+                });
+
+            } else if (sourceImage instanceof Bitmap) {
+
+                holder.imageView.setImageBitmap((Bitmap) sourceImage);
+
+                if (holder.photoViewAttacher != null) {
                     holder.photoViewAttacher.update();
                 }
-            });
+
+            } else {
+                throw new ClassCastException("getSourceImage() should be CharSequence or Bitmap.");
+            }
         }
 
         @Override
@@ -424,27 +461,5 @@ public class ImageSliderFragment extends Fragment {
     protected class ViewHolder {
         ImageView imageView;
         PhotoViewAttacher photoViewAttacher;
-    }
-
-    public interface ImageSliderable {
-
-        public void onImageSliderInitialized(ImageSliderFragment imageSliderFragment);
-
-        public void onImageSliderDismiss(ImageSliderFragment imageSliderFragment);
-
-        public ImageSliderController getImageSliderController();
-    }
-
-    public static abstract class ImageSliderController {
-        public abstract int getCount();
-
-        public abstract String getImageUrl(int position);
-
-        public abstract Point getImageSize(int position);
-
-        public abstract View getViewDisplaying(int position);
-
-        public void onPageSelected(int position) {
-        }
     }
 }
