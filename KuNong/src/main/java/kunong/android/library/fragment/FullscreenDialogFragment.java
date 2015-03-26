@@ -89,6 +89,14 @@ public abstract class FullscreenDialogFragment extends DialogFragment implements
         }
     }
 
+    @Override
+    public void dismiss() {
+        try {
+            super.dismiss();
+        } catch (IllegalStateException ignored) {
+        }
+    }
+
     public int getEnterAnimation() {
         return 0;
     }
