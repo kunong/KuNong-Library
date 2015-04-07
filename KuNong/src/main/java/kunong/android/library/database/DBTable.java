@@ -639,11 +639,16 @@ public abstract class DBTable implements Serializable, Cloneable {
         }
     }
 
+    protected void beforeCommit() {
+    }
+
     public void commit() {
         commit(true);
     }
 
     public void commit(boolean keepCache) {
+        beforeCommit();
+
         SQLiteDatabase db = DBHelper.getInstance().getDatabase();
         String[] primaryKeysName = getPrimaryKeysName();
         Object[] primaryKeysValue = getPrimaryKeysValue();
