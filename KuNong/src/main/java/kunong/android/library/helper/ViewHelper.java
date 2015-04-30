@@ -187,7 +187,7 @@ public class ViewHelper {
         return bitmap;
     }
 
-    public static interface OnLayoutUpdateListener {
-        public void onLayoutUpdate(View v);
+    public interface OnLayoutUpdateListener {
+        void onLayoutUpdate(View v);
     }
 }
