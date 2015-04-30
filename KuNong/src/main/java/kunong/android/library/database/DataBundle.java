@@ -30,7 +30,7 @@ public class DataBundle {
         try {
             String value = data.get(key);
 
-            if (!value.equalsIgnoreCase(STR_NULL))
+            if (value != null && !value.equalsIgnoreCase(STR_NULL))
                 return Byte.valueOf(data.get(key));
         } catch (NumberFormatException | NullPointerException e) {
             e.printStackTrace();
@@ -43,7 +43,7 @@ public class DataBundle {
         try {
             String value = data.get(key);
 
-            if (!value.equalsIgnoreCase(STR_NULL))
+            if (value != null && !value.equalsIgnoreCase(STR_NULL))
                 return Short.valueOf(data.get(key));
         } catch (NumberFormatException | NullPointerException e) {
             e.printStackTrace();
@@ -56,7 +56,7 @@ public class DataBundle {
         try {
             String value = data.get(key);
 
-            if (!value.equalsIgnoreCase(STR_NULL))
+            if (value != null && !value.equalsIgnoreCase(STR_NULL))
                 return Integer.valueOf(data.get(key));
         } catch (NumberFormatException | NullPointerException e) {
             e.printStackTrace();
@@ -69,7 +69,7 @@ public class DataBundle {
         try {
             String value = data.get(key);
 
-            if (!value.equalsIgnoreCase(STR_NULL))
+            if (value != null && !value.equalsIgnoreCase(STR_NULL))
                 return Long.valueOf(data.get(key));
         } catch (NumberFormatException | NullPointerException e) {
             e.printStackTrace();
@@ -82,7 +82,7 @@ public class DataBundle {
         try {
             String value = data.get(key);
 
-            if (!value.equalsIgnoreCase(STR_NULL))
+            if (value != null && !value.equalsIgnoreCase(STR_NULL))
                 return Float.valueOf(data.get(key));
         } catch (NumberFormatException | NullPointerException e) {
             e.printStackTrace();
@@ -95,7 +95,7 @@ public class DataBundle {
         try {
             String value = data.get(key);
 
-            if (!value.equalsIgnoreCase(STR_NULL))
+            if (value != null && !value.equalsIgnoreCase(STR_NULL))
                 return Double.valueOf(data.get(key));
         } catch (NumberFormatException | NullPointerException e) {
             e.printStackTrace();
