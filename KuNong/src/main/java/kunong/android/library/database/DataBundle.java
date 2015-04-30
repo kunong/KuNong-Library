@@ -1,11 +1,11 @@
 package kunong.android.library.database;
 
-import java.io.Serializable;
 import java.util.HashMap;
 
-public class DataBundle implements Serializable {
+public class DataBundle {
 
-    private static final long serialVersionUID = 8317468620973537103L;
+    private static final String STR_NULL = "null";
+
     private HashMap<String, String> data = new HashMap<>();
 
     public void put(String key, String value) {
@@ -28,7 +28,10 @@ public class DataBundle implements Serializable {
 
     public Byte getByte(String key) {
         try {
-            return Byte.valueOf(data.get(key));
+            String value = data.get(key);
+
+            if (!value.equalsIgnoreCase(STR_NULL))
+                return Byte.valueOf(data.get(key));
         } catch (NumberFormatException | NullPointerException e) {
             e.printStackTrace();
         }
@@ -38,7 +41,10 @@ public class DataBundle implements Serializable {
 
     public Short getShort(String key) {
         try {
-            return Short.valueOf(data.get(key));
+            String value = data.get(key);
+
+            if (!value.equalsIgnoreCase(STR_NULL))
+                return Short.valueOf(data.get(key));
         } catch (NumberFormatException | NullPointerException e) {
             e.printStackTrace();
         }
@@ -48,7 +54,10 @@ public class DataBundle implements Serializable {
 
     public Integer getInt(String key) {
         try {
-            return Integer.valueOf(data.get(key));
+            String value = data.get(key);
+
+            if (!value.equalsIgnoreCase(STR_NULL))
+                return Integer.valueOf(data.get(key));
         } catch (NumberFormatException | NullPointerException e) {
             e.printStackTrace();
         }
@@ -58,7 +67,10 @@ public class DataBundle implements Serializable {
 
     public Long getLong(String key) {
         try {
-            return Long.valueOf(data.get(key));
+            String value = data.get(key);
+
+            if (!value.equalsIgnoreCase(STR_NULL))
+                return Long.valueOf(data.get(key));
         } catch (NumberFormatException | NullPointerException e) {
             e.printStackTrace();
         }
@@ -68,7 +80,10 @@ public class DataBundle implements Serializable {
 
     public Float getFloat(String key) {
         try {
-            return Float.valueOf(data.get(key));
+            String value = data.get(key);
+
+            if (!value.equalsIgnoreCase(STR_NULL))
+                return Float.valueOf(data.get(key));
         } catch (NumberFormatException | NullPointerException e) {
             e.printStackTrace();
         }
@@ -78,7 +93,10 @@ public class DataBundle implements Serializable {
 
     public Double getDouble(String key) {
         try {
-            return Double.valueOf(data.get(key));
+            String value = data.get(key);
+
+            if (!value.equalsIgnoreCase(STR_NULL))
+                return Double.valueOf(data.get(key));
         } catch (NumberFormatException | NullPointerException e) {
             e.printStackTrace();
         }

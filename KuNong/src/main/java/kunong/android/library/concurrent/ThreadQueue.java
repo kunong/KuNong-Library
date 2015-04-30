@@ -33,7 +33,7 @@ public class ThreadQueue {
 
 				// Callback after completed all threads.
 				if (mListener != null) {
-					mHandler.post(() -> mListener.onCompleted());
+					mHandler.post(mListener::onCompleted);
 				}
 			}
 
@@ -44,7 +44,7 @@ public class ThreadQueue {
 		mListener = listener;
 	}
 
-	public static interface ThreadQueueListener {
-		public void onCompleted();
+	public interface ThreadQueueListener {
+		void onCompleted();
 	}
 }
