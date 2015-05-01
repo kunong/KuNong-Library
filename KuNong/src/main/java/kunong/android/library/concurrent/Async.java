@@ -8,10 +8,17 @@ import java.util.LinkedList;
 /**
  * Created by Macmini on 12/2/14 AD.
  */
-public class Async {
+public final class Async {
+
+    private Async() {
+    }
+
+    public static Task newInstance() {
+        return new Task();
+    }
 
     public static Task background(Runnable runnable) {
-        return new Task().background(runnable);
+        return newInstance().background(runnable);
     }
 
     public static Task main(Runnable runnable) {
@@ -19,18 +26,30 @@ public class Async {
     }
 
     public static Task main(Runnable runnable, long delay) {
-        return new Task().main(runnable, delay);
+        return newInstance().main(runnable, delay);
     }
 
-    public enum QueueType {
+    public static Task sync(Runnable runnable) {
+        return sync(runnable, 0);
+    }
+
+    public static Task sync(Runnable runnable, long delay) {
+        return newInstance().sync(runnable, delay);
+    }
+
+    protected enum QueueType {
         MAIN, BACKGROUND
     }
 
-    public static class Task {
+    public final static class Task {
         LinkedList<TaskQueue> queues = new LinkedList<>();
 
         private Handler mHandler = new Handler(Looper.getMainLooper());
-        private boolean hasRunningTask;
+        private boolean mHasRunningTask;
+        private boolean mIsLocked;
+
+        protected Task() {
+        }
 
         public Task background(Runnable runnable) {
             this.queues.add(new TaskQueue(QueueType.BACKGROUND, runnable));
@@ -45,15 +64,36 @@ public class Async {
         }
 
         public Task main(Runnable runnable, long delay) {
-            this.queues.add(new TaskQueue(QueueType.MAIN, runnable, delay));
+            return sync(runnable, delay, false);
+        }
+
+        public Task sync(Runnable runnable) {
+            return sync(runnable, 0);
+        }
+
+        public Task sync(Runnable runnable, long delay) {
+            return sync(runnable, delay, true);
+        }
+
+        private Task sync(Runnable runnable, long delay, boolean isLocked) {
+            this.queues.add(new TaskQueue(QueueType.MAIN, runnable, delay, isLocked));
 
             onTaskComplete();
 
             return this;
         }
 
+
+        public void release() {
+            if (mIsLocked) {
+                mIsLocked = false;
+
+                onTaskComplete();
+            }
+        }
+
         private void onTaskComplete() {
-            if (!hasRunningTask && queues.size() > 0) {
+            if (!mIsLocked && !mHasRunningTask && queues.size() > 0) {
                 TaskQueue taskQueue = queues.poll();
 
                 runTask(taskQueue);
@@ -61,7 +101,11 @@ public class Async {
         }
 
         private void runTask(TaskQueue taskQueue) {
-            hasRunningTask = true;
+            mHasRunningTask = true;
+
+            if (taskQueue.isLocked) {
+                mIsLocked = true;
+            }
 
             if (taskQueue.type == QueueType.BACKGROUND) {
                 runBackground(taskQueue.runnable);
@@ -83,7 +127,7 @@ public class Async {
 
                 @Override
                 public void onCompleted(Object o) {
-                    hasRunningTask = false;
+                    mHasRunningTask = false;
 
                     onTaskComplete();
                 }
@@ -96,26 +140,32 @@ public class Async {
             mHandler.postDelayed(() -> {
                 runnable.run();
 
-                hasRunningTask = false;
+                mHasRunningTask = false;
 
                 onTaskComplete();
             }, delay);
         }
     }
 
-    public static class TaskQueue {
+    public final static class TaskQueue {
         QueueType type;
         Runnable runnable;
         long delay;
+        boolean isLocked;
 
-        public TaskQueue(QueueType type, Runnable runnable) {
+        protected TaskQueue(QueueType type, Runnable runnable) {
             this(type, runnable, 0);
         }
 
-        public TaskQueue(QueueType type, Runnable runnable, long delay) {
+        protected TaskQueue(QueueType type, Runnable runnable, long delay) {
+            this(type, runnable, delay, false);
+        }
+
+        protected TaskQueue(QueueType type, Runnable runnable, long delay, boolean isLocked) {
             this.type = type;
             this.runnable = runnable;
             this.delay = delay;
+            this.isLocked = isLocked;
         }
     }
 }
