@@ -3,10 +3,11 @@ package kunong.android.library.event;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class NotificationCenter {
 
-    private static HashMap<String, List<OnNotifyListener>> notifyMap = new HashMap<>();
+    private static Map<String, List<OnNotifyListener>> notifyMap = new HashMap<>();
 
     public static void addListener(String event, OnNotifyListener listener) {
         List<OnNotifyListener> notify = notifyMap.get(event);
@@ -19,7 +20,7 @@ public class NotificationCenter {
         notify.add(listener);
     }
 
-    public static void dispatchEvent(String event, HashMap<String, Object> objects) {
+    public static void dispatchEvent(String event, Map<String, Object> objects) {
         List<OnNotifyListener> notify = notifyMap.get(event);
 
         if (notify != null) {
@@ -41,7 +42,7 @@ public class NotificationCenter {
         notifyMap.remove(event);
     }
 
-    public static interface OnNotifyListener {
-        public void onNotify(HashMap<String, Object> objects);
+    public interface OnNotifyListener {
+        void onNotify(Map<String, Object> objects);
     }
 }
