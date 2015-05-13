@@ -33,7 +33,7 @@ public class ObjectPool<T> {
         queue.add(object);
     }
 
-    public static interface ObjectFactory<T> {
-        public T create();
+    public interface ObjectFactory<T> {
+        T create();
     }
 }
