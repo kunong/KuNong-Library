@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import kunong.android.library.utility.Callback;
+
 public class DBHelper extends SQLiteOpenHelper {
 
     private static DBHelper mInstance = null;
@@ -27,10 +29,11 @@ public class DBHelper extends SQLiteOpenHelper {
 
     /**
      * Need to call init() before call getInstance() method.
-     * @param context Application context.
-     * @param databasePath Path of your SQLite database file in the assets folder. Example, demo.sqlite.
+     *
+     * @param context         Application context.
+     * @param databasePath    Path of your SQLite database file in the assets folder. Example, demo.sqlite.
      * @param databaseVersion Set your current SQLite database version.
-     * @param listener Callback when the database need to update.
+     * @param listener        Callback when the database need to update.
      * @return
      */
     public static DBHelper init(Context context, String databasePath, int databaseVersion, OnDatabaseUpgradeListener listener) {
@@ -157,7 +160,19 @@ public class DBHelper extends SQLiteOpenHelper {
         return db;
     }
 
+    public void transaction(Callback<SQLiteDatabase> action) {
+        db.beginTransaction();
+
+        try {
+            action.complete(db);
+
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
+    }
+
     public interface OnDatabaseUpgradeListener {
-        public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion);
+        void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion);
     }
 }
