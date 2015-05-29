@@ -203,7 +203,9 @@ public abstract class DBTable implements Serializable, Cloneable {
         SQLiteDatabase db = DBHelper.getInstance().getDatabase();
         DBTable table = createObjectFromTable(cls);
 
-        db.delete(table.getSafeTableName(), null, null);
+        synchronized (db) {
+            db.delete(table.getSafeTableName(), null, null);
+        }
 
         // Clear cache for this table.
         DBCacheManager.getInstance().removeCacheForTable(cls);
