@@ -39,7 +39,7 @@ public abstract class DBTable implements Serializable, Cloneable {
     }
 
     public static final <T extends DBTable> T findByPrimaryKeys(Class<T> cls, Object... keyValues) {
-        ArrayList<Object> valueList = new ArrayList<Object>();
+        List<Object> valueList = new ArrayList<>();
 
         // Check if values is array.
         if (keyValues.length == 1 && keyValues[0] != null && keyValues[0].getClass().isArray()) {
@@ -74,7 +74,7 @@ public abstract class DBTable implements Serializable, Cloneable {
             condition += String.format("`%s` = '%s'", primaryKeysName[i], values[i]);
         }
 
-        ArrayList<T> result = newQuery().withCondition(condition).query(cls);
+        List<T> result = newQuery().withCondition(condition).query(cls);
 
         if (result.size() > 0) {
             object = result.get(0);
@@ -85,11 +85,11 @@ public abstract class DBTable implements Serializable, Cloneable {
         return null;
     }
 
-    public static <T extends DBTable> ArrayList<T> findAll(Class<T> cls) {
+    public static <T extends DBTable> List<T> findAll(Class<T> cls) {
         return newQuery().query(cls);
     }
 
-    public static <T extends DBTable> ArrayList<T> findAll(Class<T> cls, Integer limit) {
+    public static <T extends DBTable> List<T> findAll(Class<T> cls, Integer limit) {
         return newQuery().limit(limit).query(cls);
     }
 
@@ -102,7 +102,7 @@ public abstract class DBTable implements Serializable, Cloneable {
     }
 
     @Deprecated
-    public static <T extends DBTable> ArrayList<T> findWithCondition(Class<T> cls, String condition) {
+    public static <T extends DBTable> List<T> findWithCondition(Class<T> cls, String condition) {
         return newQuery().withCondition(condition).query(cls);
     }
 
@@ -124,9 +124,9 @@ public abstract class DBTable implements Serializable, Cloneable {
         return cursor;
     }
 
-    private static <T extends DBTable> ArrayList<T> findByQuery(Class<T> cls, DBQuery dbQuery) {
+    private static <T extends DBTable> List<T> findByQuery(Class<T> cls, DBQuery dbQuery) {
         Cursor cursor = getCursorByQuery(cls, dbQuery);
-        ArrayList<T> objectList = new ArrayList<T>();
+        List<T> objectList = new ArrayList<>();
 
         while (cursor.moveToNext()) {
             T object = toObject(cls, cursor);
@@ -249,7 +249,7 @@ public abstract class DBTable implements Serializable, Cloneable {
 
     public static List<String> getAliasFieldNames(Class<? extends DBTable> cls, String aliasTableName) {
         DBTable table = createObjectFromTable(cls);
-        ArrayList<String> aliasNameList = new ArrayList<>();
+        List<String> aliasNameList = new ArrayList<>();
 
         for (String fieldName : table.getPrimaryKeysName()) {
             String aliasName = String.format("%s.`%s` %s_%s", aliasTableName, fieldName, aliasTableName, fieldName);
@@ -299,8 +299,8 @@ public abstract class DBTable implements Serializable, Cloneable {
 
         synchronized (mProperty) {
 
-            ArrayList<DBField> dbPrimaryKeyList = new ArrayList<DBField>();
-            ArrayList<DBField> dbFieldList = new ArrayList<DBField>();
+            List<DBField> dbPrimaryKeyList = new ArrayList<>();
+            List<DBField> dbFieldList = new ArrayList<>();
             Class<? extends DBTable> cls = getClass();
 
             String defaultIdValue = "";
@@ -353,8 +353,8 @@ public abstract class DBTable implements Serializable, Cloneable {
             Collections.sort(dbPrimaryKeyList, (field1, field2) -> field1.order - field2.order);
 
             // Generates arrays for faster access.
-            ArrayList<String> primaryKeyList = new ArrayList<String>();
-            ArrayList<String> fieldList = new ArrayList<String>();
+            List<String> primaryKeyList = new ArrayList<>();
+            List<String> fieldList = new ArrayList<>();
 
             for (DBField dbField : dbPrimaryKeyList) {
                 primaryKeyList.add(dbField.name);
@@ -405,7 +405,7 @@ public abstract class DBTable implements Serializable, Cloneable {
     }
 
     private String[] adjustFields(String[] fields) {
-        ArrayList<String> fieldList = new ArrayList<String>();
+        List<String> fieldList = new ArrayList<>();
 
         for (String field : fields) {
             String[] subFields = field.split(",");
@@ -420,8 +420,8 @@ public abstract class DBTable implements Serializable, Cloneable {
         return fieldList.toArray(adjustedFields);
     }
 
-    private Object[] getBaseFieldsValue(ArrayList<DBField> dbFieldList) {
-        ArrayList<Object> valueList = new ArrayList<Object>();
+    private Object[] getBaseFieldsValue(List<DBField> dbFieldList) {
+        List<Object> valueList = new ArrayList<>();
 
         for (DBField dbField : dbFieldList) {
             Object value = getDBFieldValue(dbField);
@@ -538,7 +538,7 @@ public abstract class DBTable implements Serializable, Cloneable {
     protected void mapDataToFields(DataBundle data, String prefix, boolean mapPrimaryKey, boolean dispatchEvent) {
         requireFieldParsed();
 
-        ArrayList<DBField> dbFieldList;
+        List<DBField> dbFieldList;
         if (mapPrimaryKey)
             dbFieldList = mProperty.getPrimaryKeyList();
         else
@@ -762,12 +762,12 @@ public abstract class DBTable implements Serializable, Cloneable {
             return DBTable.getCursorByQuery(cls, this);
         }
 
-        public <T extends DBTable> ArrayList<T> query(Class<T> cls) {
+        public <T extends DBTable> List<T> query(Class<T> cls) {
             return DBTable.findByQuery(cls, this);
         }
 
         public <T extends DBTable> T singleQuery(Class<T> cls) {
-            ArrayList<T> objects = limit(1).query(cls);
+            List<T> objects = limit(1).query(cls);
 
             return objects.size() > 0 ? objects.get(0) : null;
         }

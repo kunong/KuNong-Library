@@ -20,6 +20,10 @@ public class NotificationCenter {
         notify.add(listener);
     }
 
+    public static void dispatchEvent(String event) {
+        dispatchEvent(event, null);
+    }
+
     public static void dispatchEvent(String event, Map<String, Object> objects) {
         List<OnNotifyListener> notify = notifyMap.get(event);
 
