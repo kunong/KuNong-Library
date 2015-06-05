@@ -5,6 +5,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.SparseArray;
 
+import com.annimon.stream.Stream;
+
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -770,6 +772,10 @@ public abstract class DBTable implements Serializable, Cloneable {
             List<T> objects = limit(1).query(cls);
 
             return objects.size() > 0 ? objects.get(0) : null;
+        }
+
+        public <T extends DBTable> void delete(Class<T> cls) {
+            Stream.of(query(cls)).forEach(DBTable::delete);
         }
     }
 }
