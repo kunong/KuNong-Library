@@ -161,14 +161,16 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     public void transaction(Callback<SQLiteDatabase> action) {
-        db.beginTransaction();
+        synchronized (db) {
+            db.beginTransaction();
 
-        try {
-            action.complete(db);
+            try {
+                action.complete(db);
 
-            db.setTransactionSuccessful();
-        } finally {
-            db.endTransaction();
+                db.setTransactionSuccessful();
+            } finally {
+                db.endTransaction();
+            }
         }
     }
 
