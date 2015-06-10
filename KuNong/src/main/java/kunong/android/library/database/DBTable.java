@@ -732,6 +732,10 @@ public abstract class DBTable implements Serializable, Cloneable {
             return this;
         }
 
+        public DBQuery withCondition(String query, Object... args) {
+            return withCondition(String.format(Locale.US, query, args));
+        }
+
         public DBQuery orderBy(String orderBy) {
             this.orderBy = orderBy;
 
