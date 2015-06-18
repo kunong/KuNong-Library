@@ -11,4 +11,10 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE, ElementType.FIELD})
 public @interface Exclude {
+
+    Type type() default Type.ALL;
+
+    enum Type {
+        SERIALIZE, DESERIALIZE, ALL
+    }
 }

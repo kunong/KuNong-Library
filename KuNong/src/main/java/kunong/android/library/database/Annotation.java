@@ -29,7 +29,7 @@ public class Annotation {
 		DBFieldType type() default DBFieldType.NONE;
 	}
 
-	public static enum DBFieldType {
+	public enum DBFieldType {
 		NONE, DATE_TIMESTAMP, TABLE;
 	}
 }
