@@ -145,6 +145,10 @@ public final class Async {
                 onTaskComplete();
             }, delay);
         }
+
+        public int size() {
+            return this.queues.size();
+        }
     }
 
     public final static class TaskQueue {
