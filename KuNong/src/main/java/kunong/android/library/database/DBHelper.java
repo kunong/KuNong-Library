@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import kunong.android.library.utility.Callback;
+import kunong.android.library.utility.ThrowableCallback;
 
 public class DBHelper extends SQLiteOpenHelper {
 
@@ -160,7 +160,7 @@ public class DBHelper extends SQLiteOpenHelper {
         return db;
     }
 
-    public void transaction(Callback<SQLiteDatabase> action) {
+    public void transaction(ThrowableCallback<SQLiteDatabase> action) {
         synchronized (db) {
             db.beginTransaction();
 
@@ -168,6 +168,8 @@ public class DBHelper extends SQLiteOpenHelper {
                 action.complete(db);
 
                 db.setTransactionSuccessful();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
             } finally {
                 db.endTransaction();
             }
