@@ -2,12 +2,12 @@ package kunong.android.library.concurrent;
 
 import android.util.SparseArray;
 
-import com.annimon.stream.Stream;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import java8.util.stream.StreamSupport;
 
 /**
  * Created by kunong on 12/14/14 AD.
@@ -23,7 +23,7 @@ public final class EventLocker {
     }
 
     public EventLocker(String... keys) {
-        Stream.of(keys).forEach(this::lock);
+        StreamSupport.of(keys).forEach(this::lock);
     }
 
     public synchronized void lock(String key) {

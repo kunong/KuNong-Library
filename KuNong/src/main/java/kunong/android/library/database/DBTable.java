@@ -5,8 +5,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.SparseArray;
 
-import com.annimon.stream.Stream;
-
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -15,6 +13,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import java8.util.stream.StreamSupport;
 import kunong.android.library.database.Annotation.DBFieldType;
 import kunong.android.library.database.Annotation.Field;
 import kunong.android.library.database.Annotation.Id;
@@ -779,7 +778,7 @@ public abstract class DBTable implements Serializable, Cloneable {
         }
 
         public <T extends DBTable> void delete(Class<T> cls) {
-            Stream.of(query(cls)).forEach(DBTable::delete);
+            StreamSupport.stream(query(cls)).forEach(DBTable::delete);
         }
     }
 }

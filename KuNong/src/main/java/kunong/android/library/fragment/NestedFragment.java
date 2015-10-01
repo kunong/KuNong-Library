@@ -7,10 +7,10 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
-import com.annimon.stream.Stream;
-
 import java.lang.reflect.Field;
 import java.util.List;
+
+import java8.util.stream.StreamSupport;
 
 /**
  * Created by kunong on 12/13/14 AD.
@@ -70,7 +70,7 @@ public class NestedFragment extends Fragment {
         List<Fragment> fragments = getChildFragmentManager().getFragments();
 
         if (fragments != null) {
-            Stream.of(fragments).forEach(fragment -> {
+            StreamSupport.stream(fragments).forEach(fragment -> {
                 if (fragment != null) {
                     fragment.onActivityResult(requestCode, resultCode, data);
                 }
