@@ -3,7 +3,9 @@ package kunong.android.library.helper;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 /**
  * Created by kunong on 10/3/14 AD.
@@ -37,6 +39,31 @@ public class FragmentHelper {
         }
 
         return false;
+    }
+
+    public static List<Fragment> getChildren(Fragment parent, boolean recursive) {
+        Queue<FragmentManager> fmQueue = new LinkedList<>();
+        List<Fragment> children = new LinkedList<>();
+        FragmentManager fm;
+
+        fmQueue.add(parent.getChildFragmentManager());
+
+        while ((fm = fmQueue.poll()) != null) {
+            List<Fragment> fragments = fm.getFragments();
+
+            if (fragments == null || fragments.size() == 0)
+                continue;
+
+            for (Fragment fragment : fragments) {
+                children.add(fragment);
+
+                if (recursive) {
+                    fmQueue.add(fragment.getChildFragmentManager());
+                }
+            }
+        }
+
+        return children;
     }
 
 }
