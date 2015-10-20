@@ -3,6 +3,7 @@ package kunong.android.library.fragment;
 import android.app.Activity;
 import android.app.Dialog;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentTransaction;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -82,6 +83,7 @@ public class ImageSliderDialogFragment extends FullscreenDialogFragment implemen
         }
     }
 
+    @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Dialog dialog = super.onCreateDialog(savedInstanceState);

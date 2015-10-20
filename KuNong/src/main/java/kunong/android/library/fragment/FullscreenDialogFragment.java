@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.view.KeyEvent;
@@ -22,6 +23,7 @@ public abstract class FullscreenDialogFragment extends DialogFragment implements
 
     private boolean mIsClosing;
 
+    @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         View view = new FrameLayout(getActivity());
@@ -91,10 +93,7 @@ public abstract class FullscreenDialogFragment extends DialogFragment implements
 
     @Override
     public void dismiss() {
-        try {
-            super.dismiss();
-        } catch (IllegalStateException ignored) {
-        }
+        dismissAllowingStateLoss();
     }
 
     public int getEnterAnimation() {
