@@ -39,11 +39,11 @@ public final class EventLocker {
     }
 
     public void run(Runnable runnable) {
-        run(runnable.hashCode(), runnable);
+        run(null, runnable);
     }
 
     public void run(String runKey, Runnable runnable) {
-        run(getRunCode(runKey), runnable);
+        run(runKey != null ? getRunCode(runKey) : runnable.hashCode(), runnable);
     }
 
     private synchronized void run(int runCode, Runnable runnable) {
