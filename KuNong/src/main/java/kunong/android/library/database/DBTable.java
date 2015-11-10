@@ -511,9 +511,11 @@ public abstract class DBTable implements Serializable, Cloneable {
         return getBaseFieldsValue(mProperty.getFieldList());
     }
 
-    public abstract void onPrimaryKeysUpdate(DataBundle data);
+    protected void onPrimaryKeysUpdate(DataBundle data) {
+    }
 
-    public abstract void onFieldsUpdate(DataBundle data);
+    protected void onFieldsUpdate(DataBundle data) {
+    }
 
     public String getDefaultOrderBy() {
         return "";
