@@ -39,19 +39,17 @@ public abstract class DBTable implements Serializable, Cloneable {
         return cls.cast(DBCacheManager.getInstance().getCache(cls, values));
     }
 
-    public static final <T extends DBTable> T findByPrimaryKeys(Class<T> cls, Object... keyValues) {
+    public static <T extends DBTable> T findByPrimaryKeys(Class<T> cls, Object... keyValues) {
         List<Object> valueList = new ArrayList<>();
 
         // Check if values is array.
         if (keyValues.length == 1 && keyValues[0] != null && keyValues[0].getClass().isArray()) {
             Object values = keyValues[0];
 
-            if (values != null) {
-                int length = Array.getLength(values);
+            int length = Array.getLength(values);
 
-                for (int i = 0; i < length; i++) {
-                    valueList.add(Array.get(values, i));
-                }
+            for (int i = 0; i < length; i++) {
+                valueList.add(Array.get(values, i));
             }
         } else {
             for (Object value : keyValues) {
